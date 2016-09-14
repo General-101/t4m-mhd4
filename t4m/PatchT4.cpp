@@ -8,6 +8,7 @@
 // Started: 2015-07-08
 // ==========================================================
 
+#include <string>
 #include "StdInc.h"
 
 void loadGameOverlay();
@@ -20,6 +21,8 @@ void PatchT4_NoBorder();
 void PatchT4_PreLoad();
 void PatchT4_SteamDRM();
 void PatchT4_FileDebug();
+using namespace std;
+
 
 void Sys_RunInit()
 {
@@ -28,15 +31,19 @@ void Sys_RunInit()
 
 void PatchT4()
 {
-	PatchT4_SteamDRM();
+	// ↓ 这个造成服务器验证失败？
+	//PatchT4_SteamDRM();
 	PatchT4_MemoryLimits();
 	PatchT4_Branding();
 	PatchT4_Console();
 	PatchT4_Dvars();
 	PatchT4_NoBorder();
 	PatchT4_PreLoad();
+	//改个标题压压惊
+	*(DWORD*)0x6D65A0 = (DWORD)"Call of Duty: World at War Campaign/Coop - T4M MHD4 Editon";
 	//PatchT4_FileDebug();
 
+	//加载Sbeam Overlay
 	// Check if game got started using steam
 	if (!GetModuleHandle("gameoverlayrenderer.dll"))
 		loadGameOverlay();
@@ -44,7 +51,10 @@ void PatchT4()
 
 void PatchT4_PreLoad()
 {
-	nop(0x5FE685, 5); // remove optimal settings popup
+	//这里是去掉那几个框
+	// ↓ 导致我分辨率和抗狗牙一直变回默认的罪魁祸首,T4M将其去掉却导致直接帮我点了是(cao)
+	//nop(0x5FE685, 5); // remove optimal settings popup
+	//
 	*(BYTE*)0x5FF386 = (BYTE)0xEB; // skip safe mode check
 }
 

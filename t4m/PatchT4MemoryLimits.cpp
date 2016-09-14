@@ -20,10 +20,11 @@ void PatchT4_MemoryLimits()
 	ReallocateAssetPool(ASSET_TYPE_MATERIAL, 4096);
 	ReallocateAssetPool(ASSET_TYPE_STRINGTABLE, 80);
 	ReallocateAssetPool(ASSET_TYPE_WEAPON, 320);
+	ReallocateAssetPool(ASSET_TYPE_XMODEL, 1500);
 
 
 	// change the size of g_mem from 0x12C00000 to 0x14800000 (what it is in t5)
-	*(DWORD*)0x5F5492 = 0x14800000;
-	*(DWORD*)0x5F54D1 = 0x14800000;
-	*(DWORD*)0x5F54DB = 0x14800000;
+	*(DWORD*)0x5F5492 = 0x19600000;
+	*(DWORD*)0x5F54D1 = 0x19600000;
+	*(DWORD*)0x5F54DB = 0x19600000;
 }

@@ -46,10 +46,10 @@ void PatchT4_Branding()
 
 const char* SetConsoleVersion()
 {
-	return va("Call of Duty %s", VERSION_STR);
+	return va("T4M MHD4 Editon(r41) (built " DATE " " TIME " by GEEKiDoS-NPC)");
 }
 
 const char* SetShortVersion()
 {
-	return va(SHORTVERSION_STR);
+	return va("T4M r41");
 }

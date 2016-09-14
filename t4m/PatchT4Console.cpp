@@ -11,13 +11,18 @@
 #include "StdInc.h"
 
 void FilterConsoleSpam();
+dvar_t* con_external;
 
 void PatchT4_Console()
 {
+	con_external = Dvar_RegisterBool(1, "con_external", DVAR_FLAG_ARCHIVE, "Enable the external console (requires restart).");
 	*(BYTE*)0x4781FE = 0xEB; // force enable ingame console
 
-	Sys_ShowConsole();
-	FilterConsoleSpam();
+	if (con_external->current.boolean)
+	{
+		Sys_ShowConsole();
+		FilterConsoleSpam();
+	}
 }
 
 void Sys_ShowConsole()
@@ -32,7 +37,7 @@ void Sys_ShowConsole()
 void FilterConsoleSpam()
 {
 	PatchMemory(0x84B670, (PBYTE)"", 2); // set "." to blank since it spams it in dwLogOnComplete
-	nop(0x5F9DF2, 5); // vv
+	nop(0x5F9DF2, 5); //
 	nop(0x5F9E2F, 5); // disable DebugReportProfileDVars call (was being spammed when in lobbies and such)
 	nop(0x5A3C44, 5); // disable Com_Printf call for "ragdoll allocation failed" (causes frame drops up the ass)
 	nop(0x57B15B, 5); // disable Com_Printf call for "g_numFriends is now %i" (internal)
