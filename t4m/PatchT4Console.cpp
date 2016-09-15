@@ -37,9 +37,21 @@ void Sys_ShowConsole()
 void FilterConsoleSpam()
 {
 	PatchMemory(0x84B670, (PBYTE)"", 2); // set "." to blank since it spams it in dwLogOnComplete
-	nop(0x5F9DF2, 5); //
-	nop(0x5FC93D, 5); // disable Com_Printf call for "Failed to log on" 
-	nop(0x5FC9CD, 5); // disable Com_Printf call for "Failed to log on" (causes frame drops up the ass)
+	nop(0x5F9DF2, 5); 
+	
+        // 关闭 "Failed to log on" (引起吊针)
+	nop(0x5FC93D, 5); 
+	nop(0x5FC9CD, 5); 
+	// 关闭脚本错误(引起吊针)
+	nop(0x68B202, 5);
+	nop(0x68B220, 5);
+	nop(0x68B255, 5);
+	nop(0x68B240, 5);
+	nop(0x68B22A, 5);
+
+	// 关闭声音错误(引起吊针)
+	nop(0x6B6728, 5);
+	
 	nop(0x5F9E2F, 5); // disable DebugReportProfileDVars call (was being spammed when in lobbies and such)
 	nop(0x5A3C44, 5); // disable Com_Printf call for "ragdoll allocation failed" (causes frame drops up the ass)
 	nop(0x57B15B, 5); // disable Com_Printf call for "g_numFriends is now %i" (internal)
