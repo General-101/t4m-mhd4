@@ -13,12 +13,12 @@
 
 void loadGameOverlay();
 void PatchT4();
-void PatchT4_MemoryLimits();
-void PatchT4_Branding();
-void PatchT4_Console();
+void PatchT4_MemoryLimits(int FXLimit, int IMAGELimit, int SOUNDLimit, int MATERIALLimit, int STRINGTABLELimit, int WEAPONLimit, int XMODELLimit);
+void PatchT4_Branding(int DisableOnline,int DisableIntroVideo);
+void PatchT4_Console(int EnableConsole);
 void PatchT4_Dvars();
 void PatchT4_NoBorder();
-void PatchT4_PreLoad();
+void PatchT4_PreLoad(int RemoveOptimal, int SkipSafeModeCheck);
 void PatchT4_SteamDRM();
 void PatchT4_FileDebug();
 using namespace std;
@@ -33,29 +33,101 @@ void PatchT4()
 {
 	// ↓ 这个造成服务器验证失败？
 	//PatchT4_SteamDRM();
-	PatchT4_MemoryLimits();
-	PatchT4_Branding();
-	PatchT4_Console();
-	PatchT4_Dvars();
-	PatchT4_NoBorder();
-	PatchT4_PreLoad();
+
+	//加载配置文件
+	std::string ifile(".\\t4m.ini"), tmp;
+	std::ifstream ifs(ifile.c_str());
+	LPTSTR lpPath = new char[MAX_PATH];
+	strcpy(lpPath, ".\\t4m.ini");
+	if (!ifs)
+	{
+		WritePrivateProfileString("T4MCFG", "RemoveOptimal", "0", lpPath);
+		WritePrivateProfileString("T4MCFG", "SkipSafeModeCheck", "1", lpPath);
+		WritePrivateProfileString("T4MCFG", "EnableConsole", "0", lpPath);
+		WritePrivateProfileString("T4MCFG", "DisableOnline", "1", lpPath);
+		WritePrivateProfileString("T4MCFG", "DisableIntroVideo", "1", lpPath);
+		WritePrivateProfileString("T4MCFG", "Windowed", "0", lpPath);
+		WritePrivateProfileString("T4MLimits", "FXLimit", "600", lpPath);
+		WritePrivateProfileString("T4MLimits", "IMAGELimit", "4096", lpPath);
+		WritePrivateProfileString("T4MLimits", "SOUNDLimit", " 2400", lpPath);
+		WritePrivateProfileString("T4MLimits", "MATERIALLimit", "4096", lpPath);
+		WritePrivateProfileString("T4MLimits", "STRINGTABLELimit", "80", lpPath);
+		WritePrivateProfileString("T4MLimits", "WEAPONLimit", "320", lpPath);
+		WritePrivateProfileString("T4MLimits", "XMODELLimit", "1500", lpPath);
+		WritePrivateProfileString("T4MCFG", "LoadSteamOverlay", "1", lpPath);
+		PatchT4_MemoryLimits(600, 4096, 2400, 4096, 80, 320, 1500);
+		PatchT4_Branding(1, 1);
+		PatchT4_Console(0);
+		PatchT4_Dvars();
+		PatchT4_NoBorder();
+		PatchT4_PreLoad(0, 1);
+		if (!GetModuleHandle("gameoverlayrenderer.dll"))
+			loadGameOverlay();
+	}
+	else
+	{
+		int RemoveOptimal;
+		int SkipSafeModeCheck;
+		int EnableConsole;
+		int DisableOnline;
+		int DisableIntroVideo;
+		int FXLimit;
+		int IMAGELimit;
+		int SOUNDLimit;
+		int MATERIALLimit;
+		int STRINGTABLELimit;
+		int WEAPONLimit;
+		int XMODELLimit;
+		RemoveOptimal = GetPrivateProfileInt("T4MCFG", "RemoveOptimal", 0, lpPath);
+		SkipSafeModeCheck = GetPrivateProfileInt("T4MCFG", "SkipSafeModeCheck", 0, lpPath);
+		EnableConsole = GetPrivateProfileInt("T4MCFG", "EnableConsole", 0, lpPath);
+		DisableOnline = GetPrivateProfileInt("T4MCFG", "DisableOnline", 0, lpPath);
+		DisableIntroVideo = GetPrivateProfileInt("T4MCFG", "DisableIntroVideo", 0, lpPath);
+		FXLimit = GetPrivateProfileInt("T4MLimits", "FXLimit", 0, lpPath);
+		IMAGELimit = GetPrivateProfileInt("T4MLimits", "IMAGELimit", 0, lpPath);
+		SOUNDLimit = GetPrivateProfileInt("T4MLimits", "SOUNDLimit", 0, lpPath);
+		MATERIALLimit = GetPrivateProfileInt("T4MLimits", "MATERIALLimit", 0, lpPath);
+		STRINGTABLELimit = GetPrivateProfileInt("T4MLimits", "STRINGTABLELimit", 0, lpPath);
+		WEAPONLimit = GetPrivateProfileInt("T4MLimits", "WEAPONLimit", 0, lpPath);
+		XMODELLimit = GetPrivateProfileInt("T4MLimits", "XMODELLimit", 0, lpPath);
+		PatchT4_MemoryLimits(FXLimit, IMAGELimit, SOUNDLimit, MATERIALLimit, STRINGTABLELimit, WEAPONLimit, XMODELLimit);
+		PatchT4_Branding(DisableOnline, DisableIntroVideo);
+		PatchT4_Console(EnableConsole);
+		PatchT4_Dvars();
+		PatchT4_NoBorder();
+		PatchT4_PreLoad(RemoveOptimal, SkipSafeModeCheck);
+		if (GetPrivateProfileInt("T4MCFG", "Windowed", 0, lpPath) == 1)
+		{
+			*(DWORD*)0x6D6111 = (DWORD)"r_windowed";
+		}
+		if (GetPrivateProfileInt("T4MCFG", "LoadSteamOverlay", 0, lpPath) == 1)
+			if (!GetModuleHandle("gameoverlayrenderer.dll"))
+				loadGameOverlay();
+	}
+	delete[] lpPath;
+
 	//改个标题压压惊
 	*(DWORD*)0x6D65A0 = (DWORD)"Call of Duty: World at War Campaign/Coop - T4M MHD4 Editon";
+	
 	//PatchT4_FileDebug();
 
 	//加载Sbeam Overlay
 	// Check if game got started using steam
-	if (!GetModuleHandle("gameoverlayrenderer.dll"))
-		loadGameOverlay();
+	
 }
 
-void PatchT4_PreLoad()
+void PatchT4_PreLoad(int RemoveOptimal,int SkipSafeModeCheck)
 {
 	//这里是去掉那几个框
 	// ↓ 导致我分辨率和抗狗牙一直变回默认的罪魁祸首,T4M将其去掉却导致直接帮我点了是(cao)
-	//nop(0x5FE685, 5); // remove optimal settings popup
-	//
-	*(BYTE*)0x5FF386 = (BYTE)0xEB; // skip safe mode check
+	if (RemoveOptimal == 1)
+	{
+		nop(0x5FE685, 5);
+	}
+	if (SkipSafeModeCheck == 1)
+	{
+		*(BYTE*)0x5FF386 = (BYTE)0xEB;
+	}
 }
 
 void PatchT4_SteamDRM()

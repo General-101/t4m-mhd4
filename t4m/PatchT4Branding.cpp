@@ -15,7 +15,7 @@ DWORD sys_cmdLine = 0x5FF6F8;
 const char* SetConsoleVersion();
 const char* SetShortVersion();
 
-void PatchT4_Branding()
+void PatchT4_Branding(int DisableOnline,int DisableIntroVideo)
 {
 	/*
 	Useful addresses
@@ -32,12 +32,19 @@ void PatchT4_Branding()
 					0x4E55B20
 	*/
 	// TODO: Replace shortversion DVars and other version related locations
+	if (DisableIntroVideo == 1)
+	{
+
+	}
 	nop(0x59D68B, 5); // don't play intro video
-	
+
 	//去除Online功能
-	nop(0x57C32E, 5);
-	nop(0x5FC956, 5);
-	
+	if (DisableOnline == 1)
+	{
+		nop(0x57C32E, 5);
+		nop(0x5FC956, 5);
+	}
+
 	nop(0x5FD91B, 5);										// disable pc_newversionavailable check
 	PatchMemory(0x851208, (PBYTE)CONSOLEVERSION_STR, 14);	// change the console input version
 	//PatchMemory(0x851204, (PBYTE)"2", 2); // a1 for shortversion, replaces r_fullscreen default

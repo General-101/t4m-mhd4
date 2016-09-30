@@ -11,16 +11,16 @@
 
 #include "StdInc.h"
 
-void PatchT4_MemoryLimits()
+void PatchT4_MemoryLimits(int FXLimit, int IMAGELimit, int SOUNDLimit, int MATERIALLimit, int STRINGTABLELimit, int WEAPONLimit, int XMODELLimit)
 {
 	// increase pool sizes to similar (or greater) t5 sizes.
-	ReallocateAssetPool(ASSET_TYPE_FX, 600);
-	ReallocateAssetPool(ASSET_TYPE_IMAGE, 4096);
-	ReallocateAssetPool(ASSET_TYPE_LOADED_SOUND, 2400);
-	ReallocateAssetPool(ASSET_TYPE_MATERIAL, 4096);
-	ReallocateAssetPool(ASSET_TYPE_STRINGTABLE, 80);
-	ReallocateAssetPool(ASSET_TYPE_WEAPON, 320);
-	ReallocateAssetPool(ASSET_TYPE_XMODEL, 1500);
+	ReallocateAssetPool(ASSET_TYPE_FX, FXLimit);
+	ReallocateAssetPool(ASSET_TYPE_IMAGE, IMAGELimit);
+	ReallocateAssetPool(ASSET_TYPE_LOADED_SOUND, SOUNDLimit);
+	ReallocateAssetPool(ASSET_TYPE_MATERIAL, MATERIALLimit);
+	ReallocateAssetPool(ASSET_TYPE_STRINGTABLE, STRINGTABLELimit);
+	ReallocateAssetPool(ASSET_TYPE_WEAPON, WEAPONLimit);
+	ReallocateAssetPool(ASSET_TYPE_XMODEL, XMODELLimit);
 
 
 	// change the size of g_mem from 0x12C00000 to 0x14800000 (what it is in t5)

@@ -9,19 +9,20 @@
 // ==========================================================
 
 #include "StdInc.h"
+#include <fstream>
+#include <string>
 
 void FilterConsoleSpam();
 dvar_t* con_external;
 
-void PatchT4_Console()
+void PatchT4_Console(int EnableConsole)
 {
-	con_external = Dvar_RegisterBool(1, "con_external", DVAR_FLAG_ARCHIVE, "Enable the external console (requires restart).");
-	*(BYTE*)0x4781FE = 0xEB; // force enable ingame console
-
-	if (con_external->current.boolean)
+	//强制开启游戏内控制台
+	*(BYTE*)0x4781FE = 0xEB;
+	FilterConsoleSpam();
+	if (EnableConsole == 1)
 	{
 		Sys_ShowConsole();
-		FilterConsoleSpam();
 	}
 }
 
@@ -39,7 +40,7 @@ void FilterConsoleSpam()
 	PatchMemory(0x84B670, (PBYTE)"", 2); // set "." to blank since it spams it in dwLogOnComplete
 	nop(0x5F9DF2, 5); 
 	
-        // 关闭 "Failed to log on" (引起吊针)
+    // 关闭 "Failed to log on" (引起吊针)
 	nop(0x5FC93D, 5); 
 	nop(0x5FC9CD, 5); 
 	// 关闭脚本错误(引起吊针)
