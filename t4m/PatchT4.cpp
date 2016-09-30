@@ -31,10 +31,10 @@ void Sys_RunInit()
 
 void PatchT4()
 {
-	// ¡ı Õâ¸öÔì³É·şÎñÆ÷ÑéÖ¤Ê§°Ü£¿
+	// â†“ è¿™ä¸ªé€ æˆæœåŠ¡å™¨éªŒè¯å¤±è´¥ï¼Ÿ
 	//PatchT4_SteamDRM();
 
-	//¼ÓÔØÅäÖÃÎÄ¼ş
+	//åŠ è½½é…ç½®æ–‡ä»¶
 	std::string ifile(".\\t4m.ini"), tmp;
 	std::ifstream ifs(ifile.c_str());
 	LPTSTR lpPath = new char[MAX_PATH];
@@ -97,29 +97,26 @@ void PatchT4()
 		PatchT4_NoBorder();
 		PatchT4_PreLoad(RemoveOptimal, SkipSafeModeCheck);
 		if (GetPrivateProfileInt("T4MCFG", "Windowed", 0, lpPath) == 1)
-		{
+		//ä¸€ä¸ªæŠ•æœºå–å·§çš„çª—å£åŒ–æ–¹æ³•#æ»‘ç¨½
 			*(DWORD*)0x6D6111 = (DWORD)"r_windowed";
-		}
 		if (GetPrivateProfileInt("T4MCFG", "LoadSteamOverlay", 0, lpPath) == 1)
+			//åŠ è½½Sbeam Overlay
 			if (!GetModuleHandle("gameoverlayrenderer.dll"))
 				loadGameOverlay();
 	}
 	delete[] lpPath;
 
-	//¸Ä¸ö±êÌâÑ¹Ñ¹¾ª
+	//æ”¹ä¸ªæ ‡é¢˜å‹å‹æƒŠ
 	*(DWORD*)0x6D65A0 = (DWORD)"Call of Duty: World at War Campaign/Coop - T4M MHD4 Editon";
 	
 	//PatchT4_FileDebug();
-
-	//¼ÓÔØSbeam Overlay
-	// Check if game got started using steam
 	
 }
 
 void PatchT4_PreLoad(int RemoveOptimal,int SkipSafeModeCheck)
 {
-	//ÕâÀïÊÇÈ¥µôÄÇ¼¸¸ö¿ò
-	// ¡ı µ¼ÖÂÎÒ·Ö±æÂÊºÍ¿¹¹·ÑÀÒ»Ö±±ä»ØÄ¬ÈÏµÄ×ï¿ı»öÊ×,T4M½«ÆäÈ¥µôÈ´µ¼ÖÂÖ±½Ó°ïÎÒµãÁËÊÇ(cao)
+	//è¿™é‡Œæ˜¯å»æ‰é‚£å‡ ä¸ªæ¡†
+	// â†“ å¯¼è‡´æˆ‘åˆ†è¾¨ç‡å’ŒæŠ—ç‹—ç‰™ä¸€ç›´å˜å›é»˜è®¤çš„ç½ªé­ç¥¸é¦–,T4Må°†å…¶å»æ‰å´å¯¼è‡´ç›´æ¥å¸®æˆ‘ç‚¹äº†æ˜¯(cao)
 	if (RemoveOptimal == 1)
 	{
 		nop(0x5FE685, 5);
